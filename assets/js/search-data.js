@@ -402,7 +402,7 @@ ninja.data = [{
           title: 'Our paper introducing DeepCROSS — a generative AI framework for the inverse design...',
           description: "",
           section: "News",},{id: "news-presented-deltasplice-as-a-poster-at-the-eukaryotic-mrna-processing-2025-meeting-at-cold-spring-harbor-laboratory",
-          title: 'Presented DeltaSplice as a poster at the Eukaryotic mRNA Processing 2025 meeting at...',
+          title: 'Presented [DeltaSplice] as a poster at the Eukaryotic mRNA Processing 2025 meeting at...',
           description: "",
           section: "News",},{id: "projects-project-1",
           title: 'project 1',
