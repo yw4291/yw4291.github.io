@@ -440,7 +440,7 @@ ninja.data = [{
           description: "",
           section: "Books",handler: () => {
               window.location.href = "/books/the_godfather/";
-            },},{id: "news-our-paper-introducing-deepcross-a-generative-ai-framework-for-the-inverse-design-of-cross-species-bacterial-regulatory-sequences-was-selected-as-a-featured-article-in-nature-communications-read-here",
+            },},{id: "news-our-paper-introducing-deepcross-a-generative-ai-framework-for-the-inverse-design-of-cross-species-bacterial-regulatory-sequences-was-selected-as-a-featured-article-in-nature-communications",
           title: 'Our paper introducing DeepCROSS — a generative AI framework for the inverse design...',
           description: "",
           section: "News",},{id: "projects-project-1",
