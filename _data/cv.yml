@@ -1,0 +1,152 @@
+cv:
+  name: Ye Wang
+  label: Postdoctoral Research Scientist
+  email: yw4291@cumc.columbia.edu
+  location: New York, NY
+  image: ""
+  summary: >
+    I am a postdoctoral research scientist in the laboratory of Prof. Chaolin Zhang at the Irving Medical
+    Center of Columbia University. My long-term research interests involve developing programmable RNA-based
+    therapeutic technologies to correct disease-causing mutations and enable scalable precision medicine for
+    genetic and neurodegenerative disorders. My work is grounded in a learn-from-nature philosophy, drawing
+    inspiration from natural RNA regulatory systems and translating their principles into engineered
+    therapeutic platforms through bio-inspired design and AI-accelerated biological engineering.
+
+  sections:
+    Education:
+      - institution: Columbia University
+        location: New York, NY
+        area: Computational and Molecular Biology
+        studyType: Postdoctoral Research Scientist
+        start_date: 2024-02
+        end_date: present
+        highlights:
+          - "Laboratory of Prof. Chaolin Zhang, Irving Medical Center"
+
+      - institution: Tsinghua University
+        location: Beijing, China
+        area: Control Science and Engineering
+        studyType: Ph.D.
+        start_date: 2017-09
+        end_date: 2023-07
+
+      - institution: Northwest A&F University
+        location: Yangling, China
+        area: Biotechnology
+        studyType: B.S.
+        start_date: 2013-09
+        end_date: 2017-07
+
+    Awards:
+      - title: Featured Article — Editors' Highlights in Biotechnology and Methods
+        date: 2025
+        awarder: Nature Communications
+
+      - title: Youth Outstanding Paper Award
+        date: 2021
+        awarder: World Artificial Intelligence Conference (WAIC)
+
+      - title: Breakthrough Article & Cover Paper
+        date: 2020
+        awarder: Nucleic Acids Research
+
+      - title: Outstanding Student Scholarship
+        date: 2020
+        awarder: Tsinghua University
+
+      - title: National Scholarship
+        date: 2014
+        awarder: Ministry of Education of China
+
+    Publications:
+      - title: "Reference-informed prediction of alternative splicing and splicing-altering mutations from sequences"
+        authors:
+          - "Xu C*, Bao S*, Wang Y, Li W, Chen H, Jiang T†, Zhang C†"
+        publisher: "Genome Research, 34(7): 1052–1065"
+        releaseDate: 2024
+        preview: genome-research.png
+        url: https://doi.org/10.1101/gr.279044.124
+
+      - title: "Systematic representation and optimization enable the inverse design of cross-species regulatory sequences in bacteria"
+        authors:
+          - "Zhang P*, Du Q*, Wang Y*, Wei L, Wang X†"
+        publisher: "Nature Communications, 16(1): 1763"
+        releaseDate: 2025
+        preview: nat-commun.png
+        url: https://doi.org/10.1038/s41467-025-57031-1
+
+      - title: "GPro: generative AI-empowered toolkit for promoter design"
+        authors:
+          - "Wang H, Du Q, Wang Y, Xu H, Wei Z, Wang X†"
+        publisher: "Bioinformatics, 40(3): btae123"
+        releaseDate: 2024
+        preview: gpro.png
+        url: https://doi.org/10.1093/bioinformatics/btae123
+
+      - title: "Synthetic promoter design in Escherichia coli based on a deep generative network"
+        authors:
+          - "Wang Y*, Wang H*, Wei L, Li S, Liu L, Wang X†"
+        publisher: "Nucleic Acids Research, 48(12): 6403–6412"
+        releaseDate: 2020
+        preview: nar.png
+        url: https://doi.org/10.1093/nar/gkaa325
+
+      - title: "DeSP: a systematic DNA storage error simulation pipeline"
+        authors:
+          - "Yuan L, Xie Z, Wang Y†, Wang X†"
+        publisher: "BMC Bioinformatics, 23(1): 185"
+        releaseDate: 2022
+        preview: desp.png
+        url: https://doi.org/10.1186/s12859-022-04723-w
+
+      - title: "Synthetic promoter design in Escherichia coli based on multinomial diffusion model"
+        authors:
+          - "Du Q, Poon MN, Zeng X, Zhang P, Wei Z, Wang H, Wang Y, Wei L, Wang X"
+        publisher: "iScience, 27(11): 111207"
+        releaseDate: 2024
+        url: https://doi.org/10.1016/j.isci.2024.111207
+
+      - title: "Deep Hashing Based Model for Image Similarity Retrieval in DNA Storage"
+        authors:
+          - "Cai H, Wang Y, Wang X"
+        publisher: "China Automation Congress (CAC), IEEE, pp. 6612–6615"
+        releaseDate: 2021
+
+    Student Mentorship:
+      - name: "Matthew Sun (Ph.D. Student, Computer Science) — Columbia University | Jan 2026 – May 2026"
+        summary: "Mentored Matthew on applying machine learning approaches to RNA splice-site usage prediction, focusing on data preprocessing and quantitative modeling to improve splice-site usage quantification, supporting disease-relevant variant interpretation."
+
+      - name: "Luna Segarra Alonzo (Ph.D. Student) — University of Puerto Rico | Jun 2025 – Aug 2025"
+        summary: "Mentored Luna to approach RNA rewriting as a system-level regulatory design problem, emphasizing hypothesis-driven modeling, modular system architecture, and rigorous mechanistic validation. <span style=\"color: var(--global-theme-color)\">Resulted in a presentation at the Puerto Rico Neuroscience Conference.</span>"
+
+      - name: "Shiwei Liu (Ph.D. Student) — Tsinghua University | Feb 2020 – Aug 2020"
+        summary: "Guided Shiwei to model the encoding system as a layered architecture integrating constraint-aware encoding, probabilistic noise modeling, and fuzzy retrieval algorithms, enabling tolerant matching and error-resilient addressing. <span style=\"color: var(--global-theme-color)\">Advanced into a peer-reviewed publication: *Biochemical Constraint Compatible Address Design for Fuzzy Retrieval of Images in DNA Storage* (CAC 2020, IEEE).</span>"
+
+      - name: "Lekang Yuan (Ph.D. Student) — Tsinghua University | Aug 2019 – Aug 2020"
+        summary: "Guided Lekang to design computational pipelines combining probabilistic modeling and data-driven error learning. <span style=\"color: var(--global-theme-color)\">Served as team leader of the Tsinghua-A iGEM 2020 DNA storage project (Bronze Medal), leading to patent CN114023374B.</span>"
+
+    Skills:
+      - name: AI-guided Design
+        level: Expert
+        icon: fa-solid fa-brain
+        keywords: "Generative AI for biological sequences (diffusion, flow matching), large-scale DNA/RNA sequence generation, RNA-seq and splicing analysis, sQTL analysis and variant effect modeling"
+
+      - name: Statistical & Computational Analysis
+        level: Expert
+        icon: fa-solid fa-chart-line
+        keywords: "Bayesian inference and sampling, RNA-seq analysis, statistical modeling, Python, R"
+
+      - name: Molecular Biology
+        level: Advanced
+        icon: fa-solid fa-dna
+        keywords: "PCR, RT-qPCR, cloning, DNA/RNA extraction, Western blotting"
+
+      - name: Cell-based Techniques
+        level: Advanced
+        icon: fa-solid fa-microscope
+        keywords: "Cell viability assays, transfection, CRISPR, cell sorting, confocal microscopy"
+
+      - name: Assay Development
+        level: Advanced
+        icon: fa-solid fa-flask
+        keywords: "Development and optimization of in vitro and in vivo assays"
