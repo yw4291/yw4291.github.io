@@ -23,7 +23,25 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/cv/";
           },
-        },{
+        },{id: "nav-blog",
+          title: "blog",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/blog/";
+          },
+        },{id: "post-why-lt-em-gt-c-elegans-lt-em-gt-is-a-classic-model-for-studying-rna-processing",
+        
+          title: "Why &lt;em&gt;C. elegans&lt;/em&gt; is a classic model for studying RNA Processing",
+        
+        description: "A conceptual overview of SL trans-splicing, operon organization, and what the nematode C. elegans teaches us about RNA biology.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/c-elegans-trans-splicing/";
+          
+        },
+      },{
         id: 'social-email',
         title: 'email',
         section: 'Socials',
