@@ -30,9 +30,9 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-why-lt-em-gt-c-elegans-lt-em-gt-is-a-classic-model-for-studying-rna-processing",
+        },{id: "post-why-c-elegans-is-a-classic-model-for-studying-rna-processing",
         
-          title: "Why &lt;em&gt;C. elegans&lt;/em&gt; is a classic model for studying RNA Processing",
+          title: "Why C. elegans is a classic model for studying RNA Processing",
         
         description: "A conceptual overview of SL trans-splicing, operon organization, and what the nematode C. elegans teaches us about RNA biology.",
         section: "Posts",
