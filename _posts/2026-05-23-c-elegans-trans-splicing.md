@@ -3,7 +3,7 @@ layout: post
 title: "Why <em>C. elegans</em> is a classic model for studying RNA Processing"
 date: 2026-05-23 00:00:00
 description: A conceptual overview of SL trans-splicing, operon organization, and what the nematode C. elegans teaches us about RNA biology.
-tags: ["RNA biology", "generative models"]
+tags: ["RNA biology"]
 categories: RNA-biology
 ---
 
