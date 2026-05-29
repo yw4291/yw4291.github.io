@@ -30,7 +30,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-why-lt-em-gt-c-elegans-lt-em-gt-is-a-classic-model-for-studying-rna-processing",
+        },{id: "post-why-the-diffusion-module-matters-in-predictive-models-a-mathematical-perspective",
+        
+          title: "Why the Diffusion Module matters in predictive models: a mathematical perspective",
+        
+        description: "A mathematical analysis of why diffusion modules are important for modeling uncertainty, multimodal prediction, and high-dimensional output distributions.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/diffusion-module-prediction/";
+          
+        },
+      },{id: "post-why-lt-em-gt-c-elegans-lt-em-gt-is-a-classic-model-for-studying-rna-processing",
         
           title: "Why &lt;em&gt;C. elegans&lt;/em&gt; is a classic model for studying RNA Processing",
         
