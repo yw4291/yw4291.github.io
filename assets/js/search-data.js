@@ -30,7 +30,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-why-the-diffusion-module-matters-in-predictive-models-a-mathematical-perspective",
+        },{id: "post-modeling-life-beyond-standard-machine-learning-algorithms",
+        
+          title: "Modeling life beyond standard Machine Learning algorithms",
+        
+        description: "Why biological systems require multi-scale, strongly coupled, and perturbation-aware models, and how mathematical modeling and AI can move beyond standard CV and NLP paradigms.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/strongcoupledmultilevel/";
+          
+        },
+      },{id: "post-why-the-diffusion-module-matters-in-predictive-models-a-mathematical-perspective",
         
           title: "Why the Diffusion Module matters in predictive models: a mathematical perspective",
         
