@@ -30,7 +30,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-modeling-life-beyond-standard-machine-learning-algorithms",
+        },{id: "post-cryodrgn-ai-notes-on-ab-initio-heterogeneous-reconstruction-and-its-implications-for-spliceosome-dynamics-and-rna-design",
+        
+          title: "CryoDRGN-AI: Notes on ab initio heterogeneous reconstruction and its implications for spliceosome dynamics...",
+        
+        description: "A machine learning view of the CryoDRGN series, focusing on neural implicit representations, autodecoder-based ab initio reconstruction, physics-informed losses, and how latent structural landscapes can illuminate spliceosome dynamics.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/cryodrgn-ai-heterogeneous-cryo-em-reconstruction/";
+          
+        },
+      },{id: "post-modeling-life-beyond-standard-machine-learning-algorithms",
         
           title: "Modeling life beyond standard Machine Learning algorithms",
         
