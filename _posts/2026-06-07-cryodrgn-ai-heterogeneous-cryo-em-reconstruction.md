@@ -7,7 +7,7 @@ tags: [ "spliceosome","implicit-neural-representation","cryoDRGN"]
 categories: [strong-coupled, highly-dynamic]
 ---
 
-Structural biology is increasingly moving beyond the idea of a single static structure. Many macromolecular machines do not exist in one dominant conformation. Instead, they occupy an ensemble of states. Ribosomes rotate, spliceosomes bend and remodel, molecular motors step through cycles, and membrane complexes assemble, disassemble, or shift between functional conformations.
+Structural biology is increasingly moving beyond the idea of a single static structure. Many macromolecular machines do not exist in one dominant conformation. Instead, they occupy an ensemble of states. <span style="color: blue;">Ribosomes rotate, spliceosomes bend and remodel</span>, molecular motors step through cycles, and membrane complexes assemble, disassemble, or shift between functional conformations.
 
 This makes cryo-EM and cryo-ET reconstruction a natural machine learning problem. The question is no longer only:
 
@@ -21,31 +21,31 @@ but rather:
 What is the distribution of 3D structures that explains the observed particle images?
 ```
 
-The CryoDRGN series is important because it reformulates heterogeneous cryo-EM reconstruction as a generative modeling problem. Instead of assigning particles into a small number of discrete classes, CryoDRGN learns a continuous latent space where each point corresponds to a possible molecular state.
+The CryoDRGN series is important because it <span style="color: blue;">reformulates heterogeneous cryo-EM reconstruction as a generative modeling problem.</span> Instead of assigning particles into a small number of discrete classes, CryoDRGN learns a continuous latent space where each point corresponds to a possible molecular state.
 
 The 2025 CryoDRGN-AI work pushes this idea further. It moves from heterogeneous reconstruction with pre-estimated poses toward ab initio heterogeneous reconstruction, where both particle conformations and particle poses are optimized within a unified neural framework.
 
-This post explains the CryoDRGN series from a machine learning perspective, with emphasis on CryoDRGN-AI: its network architecture, forward model, loss design, and why these choices are well matched to structural heterogeneity. At the end, I discuss the spliceosome as an example of how latent structural landscapes can help us reason about dynamic molecular machines.
+This post helps to learn the <span style="color: blue;">CryoDRGN series together with readers from a machine learning perspective</span>, with emphasis on CryoDRGN-AI: its network architecture, forward model, loss design, and why these choices are well matched to structural heterogeneity. At the end, I discuss the spliceosome as an example of how latent structural landscapes can help us reason about dynamic molecular machines and also might help with RNA design.
 
 ---
 
-## 1. Cryo-EM Reconstruction as a Generative Modeling Problem
+## 1. Cryo-EM reconstruction as a Generative Modeling Problem
 
 In single-particle cryo-EM, each observed particle image can be modeled as a noisy 2D projection of a 3D molecular volume:
 
 $$
-I_i = \mathrm{CTF}*i \cdot \mathcal{P}*{R_i,t_i}(V_i) + \epsilon_i
+I_i = \mathrm{CTF}_i \cdot \mathcal{P}_{R_i,t_i}(V_i) + \epsilon_i
 $$
 
 where:
 
-* `I_i` is the observed 2D particle image;
-* `V_i` is the 3D density volume corresponding to particle `i`;
-* `R_i` is the 3D orientation;
-* `t_i` is the in-plane translation;
-* `\mathcal{P}_{R_i,t_i}` is the projection operator under pose `(R_i,t_i)`;
-* `\mathrm{CTF}_i` is the contrast transfer function;
-* `\epsilon_i` is imaging noise.
+* $I_i$ is the observed 2D particle image;
+* $V_i$ is the 3D density volume corresponding to particle $i$;
+* $R_i$ is the 3D orientation;
+* $t_i$ is the in-plane translation;
+* $\mathcal{P}_{R_i,t_i}$ is the projection operator under pose $(R_i,t_i)$;
+* $\mathrm{CTF}_i$ is the contrast transfer function;
+* $\epsilon_i$ is imaging noise.
 
 For homogeneous reconstruction, all particles are assumed to come from the same structure:
 
@@ -61,7 +61,7 @@ $$
 V_i = V(z_i)
 $$
 
-Here, `z_i` is a latent variable representing the structural state of particle `i`.
+Here, $z_i$ is a latent variable representing the structural state of particle $i$.
 
 This is the key conceptual shift behind CryoDRGN:
 
@@ -72,7 +72,7 @@ Each particle is a noisy view of one point on a structural manifold.
 
 ---
 
-## 2. CryoDRGN: A Neural Implicit Representation of Structural Heterogeneity
+## 2. CryoDRGN: A neural implicit representation of structural heterogeneity
 
 CryoDRGN represents the heterogeneous 3D density field using a coordinate-based neural network. Instead of storing each volume as a voxel grid, it learns a function:
 
@@ -88,11 +88,11 @@ $$
 
 where:
 
-* `\mathbf{x}` is a real-space coordinate;
-* `\mathbf{k}` is a Fourier-space coordinate;
-* `\mathbf{z}` is a low-dimensional latent vector;
-* `f_\theta` is a neural decoder, typically implemented as a multilayer perceptron;
-* `\theta` denotes the shared decoder parameters.
+* $\mathbf{x}$ is a real-space coordinate;
+* $\mathbf{k}$ is a Fourier-space coordinate;
+* $\mathbf{z}$ is a low-dimensional latent vector;
+* $f_\theta$ is a neural decoder, typically implemented as a multilayer perceptron;
+* $\theta$ denotes the shared decoder parameters.
 
 This representation means that a 3D volume is not a fixed array. A volume is generated by querying the decoder at many spatial or Fourier coordinates under a given latent code:
 
@@ -125,40 +125,50 @@ The original CryoDRGN model can be understood as a variational autoencoder-like 
 An encoder maps each particle image to a distribution over latent conformational states:
 
 $$
-q_\phi(\mathbf{z}_i \mid I_i)=
+q_{\phi}(\mathbf{z}_i \mid I_i)
+=
 \mathcal{N}
 \left(
-\mu_\phi(I_i),
-\mathrm{diag}(\sigma_\phi^2(I_i))
+\mu_{\phi}(I_i),
+\mathrm{diag}(\sigma_{\phi}^{2}(I_i))
 \right)
 $$
 
-A latent code is sampled from this approximate posterior and passed to the neural decoder. The decoder generates a 3D density volume conditioned on `z_i`. This volume is then projected according to the particle pose and modulated by the CTF:
+
+
+A latent code is sampled from this approximate posterior and passed to the neural decoder. The decoder generates a 3D density volume conditioned on $\mathbf{z}_i$. This volume is then projected according to the particle pose and modulated by the CTF:
 
 $$
-\hat{I}_i = \mathrm{CTF}*i
+\hat{I}_i
+=
+\mathrm{CTF}_i
 \cdot
-\mathcal{P}*{R_i,t_i}
+\mathcal{P}_{R_i,t_i}
 \left(
-V_\theta(\mathbf{z}_i)
+V_{\theta}(\mathbf{z}_i)
 \right)
 $$
 
 The training objective is based on the evidence lower bound:
 
 $$
-\mathcal{L}_{\mathrm{ELBO}} =
-\sum_i
-\mathbb{E}*{q*\phi(\mathbf{z}*i \mid I_i)}
-\left[
-\log p*\theta(I_i \mid \mathbf{z}_i,R_i,t_i)
-\right]
+\mathcal{L}_{\mathrm{ELBO}}
 =
-
+\sum_i
+\mathbb{E}_{q_{\phi}(\mathbf{z}_i \mid I_i)}
+\left[
+\log p_{\theta}
+\left(
+I_i
+\mid
+\mathbf{z}_i, R_i, t_i
+\right)
+\right]
+-
 \beta
 D_{\mathrm{KL}}
 \left[
-q_\phi(\mathbf{z}_i \mid I_i)
+q_{\phi}(\mathbf{z}_i \mid I_i)
 \parallel
 p(\mathbf{z})
 \right]
@@ -170,28 +180,25 @@ $$
 \mathcal{J}_{\mathrm{VAE}}
 =
 \sum_i
-\underbrace{
-\left|
-I_i-\hat{I}*i
-\right|*2^2
-}*{\text{image reconstruction loss}}
+\left\|
+I_i - \hat{I}_i
+\right\|_2^2
 +
 \beta
-\underbrace{
-D*{\mathrm{KL}}
+D_{\mathrm{KL}}
 \left[
-q_\phi(\mathbf{z}*i \mid I_i)
+q_{\phi}(\mathbf{z}_i \mid I_i)
 \parallel
-\mathcal{N}(0,I)
+\mathcal{N}(\mathbf{0},\mathbf{I})
 \right]
-}*{\text{latent regularization}}
 $$
+
 
 The reconstruction term comes from a Gaussian noise assumption. If the image noise is modeled as independent Gaussian noise, then maximizing the image likelihood is equivalent to minimizing squared reconstruction error.
 
 The KL term regularizes the latent space. It encourages the posterior latent distribution to remain close to a simple prior, usually a standard Gaussian. This prevents the latent representation from becoming an arbitrary lookup table with no smooth global structure.
 
-The parameter `\beta` controls the trade-off between reconstruction fidelity and latent smoothness.
+The parameter $\beta$ controls the trade-off between reconstruction fidelity and latent smoothness.
 
 ---
 
@@ -233,36 +240,38 @@ This is why CryoDRGN is more than a neural image reconstruction method. It is a 
 
 ## 5. From CryoDRGN to CryoDRGN-AI
 
-The original CryoDRGN framework usually assumes that particle poses are already known or estimated from an upstream pipeline such as RELION or cryoSPARC. In mathematical terms, it optimizes over the decoder and latent conformations while treating `R_i` and `t_i` as given:
+The original CryoDRGN framework usually assumes that particle poses are already known or estimated from an upstream pipeline such as RELION or cryoSPARC. In mathematical terms, it optimizes over the decoder and latent conformations while treating $R_i$ and $t_i$ as given:
 
 $$
-\min_{\theta,{z_i}}
+\min_{\theta,\{ \mathbf{z}_i \}}
 \sum_i
-\left|
-I_i-
+\left\|
+I_i
+-
 A_i
 \left(
-V_\theta(z_i);R_i,t_i
+V_{\theta}(\mathbf{z}_i); R_i, t_i
 \right)
-\right|_2^2
+\right\|_2^2
 $$
 
-Here, `A_i` denotes the cryo-EM forward operator, including projection, CTF modulation, and image-space or Fourier-space sampling.
+Here, $A_i$ denotes the cryo-EM forward operator, including projection, CTF modulation, and image-space or Fourier-space sampling.
 
 This assumption can become a bottleneck. If pose estimates are wrong, especially in highly heterogeneous or low-SNR datasets, the learned latent landscape may be distorted. Pose errors can be absorbed into the latent space, causing the model to confuse orientation uncertainty with structural variation.
 
 CryoDRGN-AI addresses this problem by optimizing pose and conformation together:
 
 $$
-\min_{\theta,{z_i},{R_i,t_i}}
+\min_{\theta,\{\mathbf{z}_i\},\{R_i,t_i\}}
 \sum_i
-\left|
-I_i-
+\left\|
+I_i
+-
 A_i
 \left(
-V_\theta(z_i);R_i,t_i
+V_{\theta}(\mathbf{z}_i); R_i, t_i
 \right)
-\right|_2^2
+\right\|_2^2
 $$
 
 This turns the problem into ab initio heterogeneous reconstruction. The model no longer relies on fixed upstream pose estimates. Instead, it learns:
@@ -300,17 +309,17 @@ The model therefore contains two types of learnable variables.
 
 Global parameters:
 
-```text
-θ: parameters of the neural decoder
-```
+
+* $\theta$: parameters of the neural decoder
+
 
 Particle-specific parameters:
 
-```text
-z_i: conformational or compositional latent code
-R_i: particle orientation
-t_i: in-plane particle translation
-```
+
+* $z_i$: conformational or compositional latent code
+* $R_i$: particle orientation
+* $t_i$: in-plane particle translation
+
 
 The forward pass can be summarized as:
 
@@ -345,9 +354,9 @@ $$
 \phi_i=(R_i,t_i)
 $$
 
-This autodecoder design is important because cryo-EM particle images are extremely noisy. Asking an encoder to infer a reliable latent code from a single low-SNR 2D image is difficult. Directly optimizing particle-specific latent codes can be more stable for reconstruction, even though it sacrifices the fast amortized inference provided by an encoder.
+This autodecoder design is important because <span style="color: blue;">cryo-EM particle images are extremely noisy</span>. Asking an encoder to infer a reliable latent code from a single low-SNR 2D image is difficult. <span style="color: blue;">Directly optimizing particle-specific latent codes can be more stable</span> for reconstruction, even though it sacrifices the fast amortized inference provided by an encoder.
 
-This is conceptually similar to neural implicit shape models such as DeepSDF, where each object has an optimized latent code and a shared decoder maps coordinates plus latent codes to shape values.
+<span style="color: blue;">This is conceptually similar to neural implicit shape models such as DeepSDF, where each object has an optimized latent code and a shared decoder maps coordinates plus latent codes to shape values.</span>
 
 ---
 
@@ -355,25 +364,28 @@ This is conceptually similar to neural implicit shape models such as DeepSDF, wh
 
 CryoDRGN-style methods often operate naturally in Fourier space because of the Fourier slice theorem. The 2D Fourier transform of a projection corresponds to a central slice through the 3D Fourier transform of the volume.
 
-For a 2D Fourier coordinate `\mathbf{k}_{2D}`, the predicted image can be written as:
+For a 2D Fourier coordinate $\mathbf{k}_{2D}$, the predicted image can be written as:
 
 $$
-\hat{I}*i(\mathbf{k}*{2D})
+\hat{I}_i(\mathbf{k}_{2D})
 =
-C_i(\mathbf{k}*{2D})
+C_i(\mathbf{k}_{2D})
 \cdot
-f*\theta
+f_{\theta}
 \left(
 R_i^{-1}
 \begin{bmatrix}
-\mathbf{k}_{2D}\
+k_x \\
+k_y \\
 0
 \end{bmatrix},
-z_i
-\right)
+\mathbf{z}_i
+\right),
+\qquad
+\mathbf{k}_{2D}=(k_x,k_y)
 $$
 
-where `C_i` is the CTF for particle `i`.
+where $C_i$ is the CTF for particle $i$.
 
 Translation in real space corresponds to a phase shift in Fourier space:
 
@@ -382,9 +394,16 @@ $$
 =
 C_i(\mathbf{k})
 \cdot
-f_\theta(R_i^{-1}\mathbf{k},z_i)
+f_{\theta}
+\left(
+R_i^{-1}\mathbf{k},
+\mathbf{z}_i
+\right)
 \cdot
-e^{-2\pi j \mathbf{k}^{\top}t_i}
+\exp
+\left(
+-2\pi \mathrm{i} \, \mathbf{k}^{\top}\mathbf{t}_i
+\right)
 $$
 
 This formulation is powerful because the entire image formation process becomes differentiable with respect to:
@@ -400,29 +419,34 @@ The model can therefore refine both structure and pose through gradient-based op
 
 ---
 
-## 8. Loss Function: Why This Objective Makes Sense
+## 8. Loss Function: Why this objective makes sense
 
 Assume the observed image is generated as:
 
 $$
-I_i=\hat{I}_i+\epsilon_i
+I_i = \hat{I}_i + \epsilon_i
 $$
 
 with Gaussian noise:
 
 $$
-\epsilon_i\sim\mathcal{N}(0,\sigma^2I)
+\epsilon_i \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I})
 $$
 
 Then the negative log likelihood is:
 
 $$
--\log p(I_i\mid z_i,\phi_i,\theta)
+-\log p
+\left(
+I_i
+\mid
+\mathbf{z}_i,\phi_i,\theta
+\right)
 =
 \frac{1}{2\sigma^2}
-\left|
+\left\|
 I_i-\hat{I}_i
-\right|_2^2
+\right\|_2^2
 +
 \mathrm{const}
 $$
@@ -432,33 +456,38 @@ This gives the basic reconstruction loss:
 $$
 \mathcal{L}_{\mathrm{rec}}
 =
-
 \sum_i
-\left|
-I_i-
+\left\|
+I_i
+-
 A_i
 \left(
-f_\theta(\cdot,z_i),\phi_i
+f_{\theta}(\cdot,\mathbf{z}_i),\phi_i
 \right)
-\right|_2^2
+\right\|_2^2
 $$
 
-However, reconstruction loss alone is not enough. If every particle has a free latent code, the model may use `z_i` to memorize noise, junk features, or pose errors. The latent space would then lose biological meaning.
+However, reconstruction loss alone is not enough. If every particle has a free latent code, the model may use $\mathbf{z}_i$ to memorize noise, junk features, or pose errors. The latent space would then lose biological meaning.
 
 A common solution is to place a Gaussian prior on the latent codes:
 
 $$
-p(z_i)=\mathcal{N}(0,I)
+p(\mathbf{z}_i)
+=
+\mathcal{N}(\mathbf{0},\mathbf{I})
 $$
 
 The negative log prior gives an L2 penalty:
 
 $$
--\log p(z_i)
+-\log p(\mathbf{z}_i)
 =
-
 \frac{1}{2}
-|z_i|_2^2+\mathrm{const}
+\left\|
+\mathbf{z}_i
+\right\|_2^2
++
+\mathrm{const}
 $$
 
 Thus, a simplified CryoDRGN-AI objective can be written as:
@@ -467,43 +496,26 @@ $$
 \mathcal{L}
 =
 \sum_i
-\left|
-I_i-
+\left\|
+I_i
+-
 A_i
 \left(
-f_\theta(\cdot,z_i),\phi_i
+f_{\theta}(\cdot,\mathbf{z}_i),\phi_i
 \right)
-\right|_2^2
+\right\|_2^2
 +
 \lambda_z
 \sum_i
-|z_i|*2^2
+\left\|
+\mathbf{z}_i
+\right\|_2^2
 +
-\lambda*\theta
-|\theta|_2^2
+\lambda_{\theta}
+\left\|
+\theta
+\right\|_2^2
 $$
-
-Conceptually:
-
-```text
-total loss =
-    physics-based image reconstruction error
-  + latent regularization
-  + network regularization
-  + pose or shift constraints
-```
-
-Each component has a clear role.
-
-The reconstruction term enforces agreement with the observed cryo-EM images.
-
-The latent regularization term limits the information capacity of each particle-specific code.
-
-The shared neural decoder forces all particles to lie on a common structural manifold.
-
-The physics-based forward model ensures that the model explains images through 3D structure, not through arbitrary 2D image generation.
-
-This is the central reason the loss is meaningful. It is not just a numerical objective; it encodes the physical and statistical assumptions of the reconstruction problem.
 
 ---
 
@@ -514,7 +526,7 @@ Without regularization, an autodecoder can become too flexible. Each particle co
 Regularization constrains the information stored in each latent code:
 
 $$
-z_i \sim \mathcal{N}(0,I)
+\mathbf{z}_i \sim \mathcal{N}(0,I)
 $$
 
 This encourages the model to encode only variation that is shared across many particles. In other words:
@@ -523,23 +535,24 @@ This encourages the model to encode only variation that is shared across many pa
 A structural feature should appear in latent space only if it helps explain population-level variation.
 ```
 
-This is especially important for biological interpretation. A useful latent space should separate or organize molecular states, not merely index individual particle images.
+<span style="color: blue;">This is especially important for biological interpretation. A useful latent space should separate or organize molecular states, not merely index individual particle images.</span>
 
-The low-dimensional bottleneck plays a similar role. If `z_i` has too many dimensions, the model may memorize particle-specific noise. If it has too few dimensions, the model may fail to capture important biological variation. The dimension of `z` therefore controls the representational capacity of the structural manifold.
+The low-dimensional bottleneck plays a similar role. If $z_i$ has too many dimensions, the model may memorize particle-specific noise. If it has too few dimensions, the model may fail to capture important biological variation. The dimension of $z$ therefore controls the representational capacity of the structural manifold.
 
 ---
 
-## 10. Pose Estimation: The Key Optimization Challenge
+## 10. Pose Estimation: The key optimization challenge
 
 The most difficult part of ab initio cryo-EM reconstruction is pose estimation.
 
 The pose variable is:
 
 $$
-\phi_i=(R_i,t_i)
+\phi_i=(R_i,\mathbf{t}_i)
 $$
 
-where `R_i` lies on the rotation group `SO(3)`, and `t_i` is the in-plane shift.
+
+where $R_i$ lies on the rotation group $SO(3)$, and $\mathbf{t}_i$ is the in-plane shift.
 
 Directly optimizing pose from random initialization is difficult because the loss landscape over rotations is highly non-convex. Many orientations can produce partially similar projections, especially when the data are noisy or the molecule has approximate symmetry.
 
@@ -555,16 +568,17 @@ Stage 2: stochastic gradient descent refinement
 Hierarchical pose search performs a coarse-to-fine search over a discretized pose grid:
 
 $$
-\phi_i^*
+\phi_i^{*}
 =
-\arg\min_{\phi\in\Phi_{\mathrm{grid}}}
-\left|
-I_i-
+\arg\min_{\phi \in \Phi_{\mathrm{grid}}}
+\left\|
+I_i
+-
 A_i
 \left(
-f_\theta(\cdot,z_i),\phi
+f_{\theta}(\cdot,\mathbf{z}_i),\phi
 \right)
-\right|_2^2
+\right\|_2^2
 $$
 
 This stage is robust because it does not require a good gradient-based initialization. It can search broadly over orientation space.
@@ -579,7 +593,7 @@ $$
 \phi_i
 \leftarrow
 \phi_i
-=
+-
 \eta
 \nabla_{\phi_i}
 \mathcal{L}
@@ -623,28 +637,41 @@ Each stage compresses uncertainty into intermediate results. For example, once p
 CryoDRGN-AI instead places several unknowns into one optimization problem:
 
 $$
-\min_{\theta,{z_i},{\phi_i}}
+\min_{\theta,\{\mathbf{z}_i\},\{\phi_i\}}
 \sum_i
-\left|
-I_i-
+\left\|
+I_i
+-
 A_i
 \left(
-f_\theta(\cdot,z_i),\phi_i
+f_{\theta}(\cdot,\mathbf{z}_i),\phi_i
 \right)
-\right|_2^2
+\right\|_2^2
 +
 \lambda_z
 \sum_i
-|z_i|_2^2
+\left\|
+\mathbf{z}_i
+\right\|_2^2
 $$
 
 From a probabilistic perspective, this resembles MAP estimation:
 
 $$
-\max_{\theta,{z_i},{\phi_i}}
-p({I_i}\mid\theta,{z_i},{\phi_i})
-p({z_i})
-p({\phi_i})
+\max_{\theta,\{\mathbf{z}_i\},\{\phi_i\}}
+\sum_i
+\left[
+\log p
+\left(
+I_i
+\mid
+\theta,\mathbf{z}_i,\phi_i
+\right)
++
+\log p(\mathbf{z}_i)
++
+\log p(\phi_i)
+\right]
 $$
 
 It is not full Bayesian posterior inference, but it is more unified than a pipeline that fixes poses before modeling heterogeneity.
@@ -666,43 +693,36 @@ This is why CryoDRGN-AI is best viewed as an ab initio heterogeneous reconstruct
 
 CryoDRGN-style models can represent both conformational and compositional heterogeneity.
 
-Conformational heterogeneity refers to continuous structural motion:
+Conformational heterogeneity refers to continuous structural motion, such as:
 
-```text
-domain bending
-subunit rotation
-opening and closing
-local flexibility
-```
+- domain bending
+- subunit rotation
+- opening and closing
+- local flexibility
 
-Compositional heterogeneity refers to the presence or absence of density:
+Compositional heterogeneity refers to the presence or absence of density, such as:
 
-```text
-factor bound or unbound
-ligand present or absent
-subunit assembled or missing
-RNA or protein segment ordered or disordered
-```
+- factor bound or unbound
+- ligand present or absent
+- subunit assembled or missing
+- RNA or protein segment ordered or disordered
 
-Because the decoder generates a full density field conditioned on `z`, both types of variation can be represented:
+Because the decoder generates a full density field conditioned on $\mathbf{z}$, both types of variation can be represented:
 
 $$
-V_\theta(z)
+V_{\theta}(\mathbf{z})
 =
-
-\text{density field conditioned on latent state }z
+\text{density field conditioned on latent state } \mathbf{z}
 $$
 
 In latent space, these patterns may appear differently:
 
-```text
-continuous trajectory: conformational motion
-separate cluster: compositional state
-outlier cluster: broken or junk particles
-branching manifold: multiple assembly or transition pathways
-```
+- continuous trajectory: conformational motion
+- separate cluster: compositional state
+- outlier cluster: broken or junk particles
+- branching manifold: multiple assembly or transition pathways
 
-This is one of the main advantages of the method. The user does not need to predefine the number of structural classes. The model can discover continuous and discrete variation from the data.
+<span style="color: blue;">This is one of the main advantages of the method. The user does not need to predefine the number of structural classes. The model can discover continuous and discrete variation from the data.</span>
 
 ---
 
@@ -723,8 +743,7 @@ The model cannot explain images without constructing 3D molecular structure.
 All particles share the same neural decoder:
 
 ```text
-different particles have different latent codes,
-but the mapping from latent space to density is shared.
+different particles have different latent codes, but the mapping from latent space to density is shared.
 ```
 
 This encourages a global structural manifold rather than unrelated per-particle reconstructions.
@@ -734,8 +753,7 @@ This encourages a global structural manifold rather than unrelated per-particle 
 Each particle state is represented by a low-dimensional latent code:
 
 ```text
-the latent variable should capture structural variation,
-not pixel-level noise.
+the latent variable should capture structural variation, not pixel-level noise.
 ```
 
 ### 13.4 Physics-Based Forward Model
@@ -751,8 +769,7 @@ the neural network is constrained by microscope physics.
 Hierarchical search provides robust pose initialization. SGD provides continuous refinement.
 
 ```text
-global search improves robustness;
-local gradient optimization improves precision.
+global search improves robustness, local gradient optimization improves precision.
 ```
 
 Together, these biases make the model suitable for noisy, heterogeneous structural biology data.
@@ -764,7 +781,9 @@ Together, these biases make the model suitable for noisy, heterogeneous structur
 At first glance, the reconstruction term looks like ordinary mean squared error:
 
 $$
-\left|I_i-\hat{I}_i\right|_2^2
+\left\|
+I_i-\hat{I}_i
+\right\|_2^2
 $$
 
 But this interpretation is incomplete.
@@ -774,19 +793,15 @@ A generic image model could reconstruct each 2D particle without ever learning a
 $$
 \hat{I}_i
 =
-\mathrm{CTF}*i
+\mathrm{CTF}_i
 \cdot
-\mathcal{P}*{R_i,t_i}
+\mathcal{P}_{R_i,t_i}
 \left(
-V_\theta(z_i)
+V_{\theta}(\mathbf{z}_i)
 \right)
 $$
 
-Thus, image reconstruction is only the observable consequence of a deeper constraint:
-
-```text
-the model must explain all images as projections of a shared family of 3D structures.
-```
+Thus, image reconstruction is only the observable consequence of a deeper constraint: the model must explain all images as projections of a shared family of 3D structures.
 
 This is the essential difference between a physics-informed generative model and a standard image autoencoder.
 
@@ -801,8 +816,7 @@ The CryoDRGN series can be viewed as a progression.
 Core problem:
 
 ```text
-given particle images and estimated poses,
-learn continuous structural heterogeneity.
+given particle images and estimated poses, learn continuous structural heterogeneity.
 ```
 
 Core model:
@@ -854,7 +868,7 @@ CryoDRGN-AI is therefore not merely another post-processing method. It is a more
 
 The spliceosome is an ideal example for CryoDRGN-style modeling.
 
-Splicing is not a single structural event. It is a sequence of RNA-protein rearrangements involving snRNP assembly, branch point recognition, splice-site positioning, catalytic activation, exon ligation, and disassembly.
+<span style="color: blue;">Splicing is not a single structural event. It is a sequence of RNA-protein rearrangements involving snRNP assembly, branch point recognition, splice-site positioning, catalytic activation, exon ligation, and disassembly.</span>
 
 The spliceosome therefore does not naturally fit into a small number of rigid structural classes. Even within one nominal biochemical state, such as the pre-catalytic spliceosome, particles may show bending, rotation, subcomplex rearrangement, and local density variation.
 
@@ -865,7 +879,7 @@ too few classes: continuous motion is oversimplified;
 too many classes: each class has lower signal and noisier maps.
 ```
 
-CryoDRGN-AI offers a different representation. Instead of asking which class each spliceosome particle belongs to, it asks where each particle lies in a learned structural latent space.
+CryoDRGN-AI offers a different representation. Instead of asking which class each spliceosome particle belongs to, <span style="color: blue;">it asks where each particle lies in a learned structural latent space.</span>
 
 This latent space can reveal:
 
@@ -886,7 +900,7 @@ For pre-catalytic spliceosome data, CryoDRGN-AI demonstrates how a learned laten
 Suppose each spliceosome particle receives a latent code:
 
 $$
-z_1,z_2,\ldots,z_N
+\mathbf{z}_1,\mathbf{z}_2,\ldots,\mathbf{z}_N
 $$
 
 Collecting them gives a latent matrix:
@@ -894,12 +908,11 @@ Collecting them gives a latent matrix:
 $$
 Z
 =
-
 \begin{bmatrix}
-z_1^\top\
-z_2^\top\
-\vdots\
-z_N^\top
+\mathbf{z}_1^{\top} \\
+\mathbf{z}_2^{\top} \\
+\vdots \\
+\mathbf{z}_N^{\top}
 \end{bmatrix}
 $$
 
@@ -908,84 +921,56 @@ We can visualize this latent distribution using PCA, UMAP, diffusion maps, or gr
 Then we can select representative latent points:
 
 $$
-z^{(1)},z^{(2)},z^{(3)},\ldots
+\mathbf{z}^{(1)},\mathbf{z}^{(2)},\mathbf{z}^{(3)},\ldots
 $$
 
 and decode them into density maps:
 
 $$
-V^{(j)}=V_\theta(z^{(j)})
+V^{(j)}
+=
+V_{\theta}
+\left(
+\mathbf{z}^{(j)}
+\right)
 $$
 
 If moving along one latent direction generates maps where the spliceosome gradually bends, then that direction may correspond to a major conformational coordinate.
 
 In this sense, the latent space becomes a candidate reaction coordinate for structural dynamics:
 
-```text
-latent direction
-    ↓
-decoded density maps
-    ↓
-interpretable molecular motion
-```
+- latent direction
+- decoded density maps
+- interpretable molecular motion
 
 However, interpretation must be cautious. A latent direction may mix several factors:
 
-```text
-true conformational variation
-compositional heterogeneity
-pose uncertainty
-particle quality
-CTF-related artifacts
-local flexibility
-junk particles
-```
-
-Therefore, a robust workflow should include:
-
-```text
-latent visualization
-    ↓
-trajectory or cluster sampling
-    ↓
-map generation
-    ↓
-particle support analysis
-    ↓
-independent reconstruction or backprojection
-    ↓
-comparison with known structures
-    ↓
-biological validation
-```
-
-The latent space is a hypothesis generator, not final biological proof.
+- true conformational variation
+- compositional heterogeneity
+- pose uncertainty
+- particle quality
+- CTF-related artifacts
+- local flexibility
+- junk particles
 
 ---
 
-## 18. From Spliceosome Dynamics to Future Design
+## 18. From Spliceosome Dynamics to RNA Design
 
 The long-term value of CryoDRGN-AI is not only reconstructing structures. It may help define design objectives for dynamic molecular systems.
 
-For a static protein, the design objective is often:
+For a static protein, the design objective is often to stabilize a target structure.
 
-```text
-stabilize this target structure
-```
-
-For a dynamic molecular machine such as the spliceosome, a more meaningful objective may be:
-
-```text
-shift the population from one conformational basin to another
-```
+For a dynamic molecular machine such as the spliceosome, a more meaningful objective may be to shift the population from one conformational basin to another.
 
 In latent-space terms, a perturbation changes the structural distribution:
 
 $$
-\Delta p(z)
+\Delta p(\mathbf{z})
 =
-p(z\mid\mathrm{perturbation})
-p(z\mid\mathrm{control})
+p(\mathbf{z}\mid\mathrm{perturbation})
+-
+p(\mathbf{z}\mid\mathrm{control})
 $$
 
 This provides a quantitative way to describe how a mutation, small molecule, antisense oligonucleotide, or RNA sequence change alters a molecular ensemble.
@@ -996,7 +981,12 @@ If a latent region corresponds to a stalled, inactive, or pre-catalytic spliceos
 
 $$
 \max_{\mathrm{design}}
-\Pr(z\in\mathcal{Z}_{\mathrm{target}})
+\Pr
+\left(
+\mathbf{z}
+\in
+\mathcal{Z}_{\mathrm{target}}
+\right)
 $$
 
 This design goal is ensemble-based rather than structure-based. The objective is not merely to bind a pocket, but to reshape the conformational population.
@@ -1053,7 +1043,6 @@ Fourth, latent outlier clusters may represent biologically meaningful rare state
 
 Fifth, density-level interpretation should eventually be connected to atomic modeling, biochemical perturbation, mutagenesis, functional assays, or orthogonal structural evidence.
 
-The model should therefore be used as a structural hypothesis engine rather than a fully automated biological interpreter.
 
 ---
 
@@ -1104,7 +1093,7 @@ physics-informed forward modeling
 
 For dynamic systems such as the spliceosome, this framework is especially compelling. It does not force particles into a small number of static classes. Instead, it learns a structural landscape where continuous motion, compositional variation, abnormal particles, and possible intermediate states can be studied together.
 
-In the long term, this type of model may shift structural biology from determining individual structures toward measuring and designing structural distributions. For biological machines, that may be the more natural level of description: not one structure, but a landscape of possible states and transitions.
+In the long term, this type of model may shift structural biology from determining individual structures toward measuring and designing structural distributions. For biological machines, that may be the more natural level of description: not one structure, but a landscape of possible states and transitions. This is especially relevant for RNA design, where the goal is often not only to design a sequence that folds into one target structure, but to design an RNA molecule whose ensemble, accessibility, interactions, and conformational switching behavior produce the desired function. In this view, CryoDRGN-style latent landscapes could provide structural feedback for designing RNAs that stabilize productive spliceosomal states, avoid nonproductive conformations, or tune the population balance between competing molecular states.
 
 ---
 
