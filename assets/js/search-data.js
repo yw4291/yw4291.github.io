@@ -30,7 +30,7 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-cryodrgn-ai-notes-on-ab-initio-heterogeneous-reconstruction-and-its-implications-for-spliceosome-dynamics-and-rna-design",
+        },{id: "post-cryodrgn-ai-notes-on-ab-initio-heterogeneous-reconstruction-and-its-implications-for-spliceosome-dynamics",
         
           title: "CryoDRGN-AI: Notes on ab initio heterogeneous reconstruction and its implications for spliceosome dynamics...",
         
