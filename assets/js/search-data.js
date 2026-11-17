@@ -30,7 +30,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/blog/";
           },
-        },{id: "post-cryodrgn-ai-notes-on-ab-initio-heterogeneous-reconstruction-and-its-implications-for-spliceosome-dynamics",
+        },{id: "post-from-spliceai-to-spliceai2-the-technical-toolbox-of-modern-sequence-to-splicing-models",
+        
+          title: "From SpliceAI to SpliceAI2: the technical toolbox of modern sequence-to-splicing models",
+        
+        description: "A machine learning view of SpliceAI2 and recent splicing models (SpliceAI, Pangolin, DeltaSplice, Splam, SpliceTransformer, AlphaGenome, OpenSpliceAI), focusing on context length, output hierarchy, splice graphs with dynamic programming, target design, tissue conditioning, and variant scoring.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/spliceai2-splicing-models-techniques/";
+          
+        },
+      },{id: "post-cryodrgn-ai-notes-on-ab-initio-heterogeneous-reconstruction-and-its-implications-for-spliceosome-dynamics",
         
           title: "CryoDRGN-AI: Notes on ab initio heterogeneous reconstruction and its implications for spliceosome dynamics...",
         
